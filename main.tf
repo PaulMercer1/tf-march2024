@@ -40,6 +40,7 @@ resource "azurerm_network_interface" "example1" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.example.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = azurerm_public_ip.example.id
   }
 }
 
@@ -69,40 +70,62 @@ resource "azurerm_linux_virtual_machine" "example1" {
   }
 }
 
-resource "azurerm_network_interface" "example2" {
-  name                = "example-nic2"
-  location            = azurerm_resource_group.example.location
+resource "azurerm_public_ip" "example" {
+  name                = "acceptanceTestPublicIp1"
   resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  allocation_method   = "Static"
 
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.example.id
-    private_ip_address_allocation = "Dynamic"
+  tags = {
+    environment = "Production"
   }
 }
 
-resource "azurerm_linux_virtual_machine" "example2" {
-  name                = "example-machine2"
-  resource_group_name = azurerm_resource_group.example.name
+resource "azurerm_route_table" "example" {
+  name                          = "example-route-table"
+  location                      = azurerm_resource_group.example.location
+  resource_group_name           = azurerm_resource_group.example.name
+  disable_bgp_route_propagation = false
+
+  route {
+    name           = "route1"
+    address_prefix = "10.1.0.0/16"
+    next_hop_type  = "VnetLocal"
+  }
+
+  tags = {
+    environment = "Production"
+  }
+}
+
+resource "azurerm_subnet_route_table_association" "example" {
+  subnet_id      = azurerm_subnet.example.id
+  route_table_id = azurerm_route_table.example.id
+}
+
+resource "azurerm_network_security_group" "example" {
+  name                = "acceptanceTestSecurityGroup1"
   location            = azurerm_resource_group.example.location
-  size                = "Standard_B2s"
-  admin_username      = "adminuser"
-  network_interface_ids = [
-    azurerm_network_interface.example2.id,
-  ]
+  resource_group_name = azurerm_resource_group.example.name
 
-  os_disk {
-    caching              = "ReadWrite"
-    disk_size_gb         = 30
-    storage_account_type = "Standard_LRS"
+  security_rule {
+    name                       = "test123"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
   }
-  disable_password_authentication = false
-  admin_password = "Pa$$w0rd!123"
 
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts"
-    version   = "latest"
+  tags = {
+    environment = "Production"
   }
+}
+
+resource "azurerm_subnet_network_security_group_association" "example" {
+  subnet_id                 = azurerm_subnet.example.id
+  network_security_group_id = azurerm_network_security_group.example.id
 }
