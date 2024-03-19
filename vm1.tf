@@ -16,7 +16,7 @@ resource "azurerm_linux_virtual_machine" "example" {
   name                = "example-machine1"
   resource_group_name = azurerm_resource_group.example.name
   location            = azurerm_resource_group.example.location
-  size                = "Standard_B2s"
+  size                = var.vm_size
 
   admin_username      = "adminuser"
   disable_password_authentication = false
@@ -28,7 +28,7 @@ resource "azurerm_linux_virtual_machine" "example" {
 
   os_disk {
     caching              = "ReadWrite"
-    disk_size_gb         = 30
+    disk_size_gb         = var.vm_disk_size
     storage_account_type = "Standard_LRS"
   }
 
