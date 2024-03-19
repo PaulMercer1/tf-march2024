@@ -7,7 +7,7 @@ resource "azurerm_route_table" "example" {
 
   route {
     name           = "route1"
-    address_prefix = var.sn_addresses[0]
+    address_prefix = azurerm_subnet.example.address_prefixes[0]
     next_hop_type  = "VnetLocal"
   }
 

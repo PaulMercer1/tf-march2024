@@ -14,7 +14,3 @@ variable "vm_disk_size" {
 variable "vnet_addresses" {
     type    =   list(string)
 }
-
-variable "sn_addresses" {
-    type    =   list(string)
-}

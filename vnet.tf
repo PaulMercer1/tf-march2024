@@ -12,5 +12,5 @@ resource "azurerm_subnet" "example" {
   name                 = "internal"
   resource_group_name  = azurerm_resource_group.example.name
   virtual_network_name = azurerm_virtual_network.example.name
-  address_prefixes     = var.sn_addresses
+  address_prefixes     = [cidrsubnet(var.vnet_addresses[0], 8, 1)]
 }
