@@ -34,6 +34,7 @@ resource "azurerm_network_security_group" "example" {
 
   tags = {
     environment = "Production"
+    dummy       = azurerm_linux_virtual_machine.example.name
   }
 }
 
