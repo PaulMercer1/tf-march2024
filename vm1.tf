@@ -19,8 +19,10 @@ resource "azurerm_linux_virtual_machine" "example" {
   size                = var.vm_size
 
   admin_username      = "adminuser"
-  disable_password_authentication = false
-  admin_password = "Pa$$w0rd!123"
+  admin_ssh_key {
+    username   = "adminuser"
+    public_key = file("admin.pub")
+  }
 
   network_interface_ids = [
     azurerm_network_interface.example.id,
