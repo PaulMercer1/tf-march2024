@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "example" {
-  name                     = "pmstoreacc342342"
+  name                     = "${var.storageprefix}${random_id.storename.hex}"
   resource_group_name      = azurerm_resource_group.example.name
   location                 = azurerm_resource_group.example.location
   account_tier             = "Standard"
